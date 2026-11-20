@@ -2,3 +2,7 @@ services:
   mysql:
     ports:
       - "127.0.0.1:3306:3306"
+    # Só no desenvolvimento: a rede_interna não permite publicar portas
+    networks:
+      - rede_interna
+      - rede_publica
