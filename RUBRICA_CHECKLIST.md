@@ -4,6 +4,18 @@ Legenda: `[x]` concluído e testado · `[~]` parcial ou falta testar na tela · 
 
 Repositórios: `backend/` (API, Docker, Nginx, agentes) e `frontend/` (React).
 
+## Resumo
+
+| Disciplina | Situação |
+|---|---|
+| Back-end com IA Generativa | Todos os itens concluídos e testados |
+| Front-end | Implementado; autenticação e cadastro conferidos na tela; CRUDs e edição de perfil testados pela API, faltando conferência visual |
+| Ferramentas DevOps | Todos os itens concluídos e testados |
+| Tech Forge | Todos os itens concluídos |
+| Evolução do projeto | Persona definida; código 100% TypeScript (o único `.js` é o `eslint.config.js` do modelo da aula) |
+
+**Como foi testado:** scripts de requisições HTTP cobrindo cerca de 100 casos (status esperados, permissões, validações, paginação, regras de estoque e concorrência), executados novamente ao final como regressão; verificação direta no MySQL; testes dos schemas do front; e testes do Docker (portas, redes, proxy e persistência após `docker compose down`/`up`).
+
 ## Back-end com IA Generativa
 
 ### Autenticação - [x]
