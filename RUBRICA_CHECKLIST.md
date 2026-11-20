@@ -46,10 +46,10 @@ CRUDs planejados: Categorias, Autores, Livros e Pedidos (com itens do pedido).
 
 | Requisito | Estado | Onde | Observação |
 |---|---|---|---|
-| 4 CRUDs completos | [ ] | | |
-| Todas as rotas autenticadas | [ ] | | |
-| Paginação das listagens | [ ] | | |
-| Não editar/deletar recursos inexistentes | [ ] | | |
+| 4 CRUDs completos | [~] | `src/services/CategoriaService.ts` | 1 de 4: Categorias concluído e testado |
+| Todas as rotas autenticadas | [x] | `src/routes/crudRoutes.ts` | `autenticar` em todas as rotas; escrita só para admin. Testado: sem token 401, cliente escrevendo 403 |
+| Paginação das listagens | [x] | `src/repositories/RepositorioMySQL.ts`, `src/types/paginacao.ts` | `?pagina` e `?limite` (máx. 50), com `total` e `totalPaginas`. Testado com 12 categorias |
+| Não editar/deletar recursos inexistentes | [x] | `src/services/CrudService.ts` | PUT e DELETE de id inexistente retornam 404 |
 | Ao menos 1 relacionamento | [ ] | | Livro → Autor/Categoria, Pedido → Usuário, Item → Livro |
 
 ### Configuração de Agentes - [ ]
@@ -128,10 +128,10 @@ CRUDs planejados: Categorias, Autores, Livros e Pedidos (com itens do pedido).
 |---|---|---|---|
 | Encapsulamento e proteção do estado | [x] | `src/models/*.ts` | Campos `#privados` e `readonly`, construtores só inicializam |
 | Acesso controlado e propriedades | [x] | `src/models/Usuario.ts`, `src/models/Cpf.ts` | `set nome` valida; `cpf.formatado` transforma; senha sem getter |
-| Modelagem do domínio e pilares da POO | [~] | | Faltam herança, classe abstrata e polimorfismo |
-| Tipagem avançada | [~] | | Faltam interfaces e generics |
-| Princípios SOLID | [~] | | Camadas separadas; falta inversão de dependência |
-| Exceções e organização | [~] | `src/errors/AppError.ts` | Falta hierarquia de erros |
+| Modelagem do domínio e pilares da POO | [~] | `src/models/Entidade.ts`, `src/errors/AppError.ts` | Classes abstratas `Entidade`, `AppError`, `RepositorioMySQL<T>` e `CrudService<T>` com herança; polimorfismo em `toJSON()` e no `status` dos erros. Faltam as demais entidades do domínio |
+| Tipagem avançada | [x] | `src/repositories/Repositorio.ts`, `src/types/paginacao.ts` | Interfaces `Repositorio<T>` e `ServicoCrud<T>`, tipo genérico `Pagina<T>`, union `Perfil`, entradas tratadas como `unknown` (sem `any`) |
+| Princípios SOLID | [~] | `src/services/CrudService.ts`, `src/controllers/CrudController.ts` | S: camadas separadas. O: um CRUD novo não muda a base. L: qualquer `CrudService` cumpre o contrato `ServicoCrud`. D: services dependem da interface `Repositorio<T>`. Revisar ao final |
+| Exceções e organização | [x] | `src/errors/` | `ValidacaoError`, `NaoAutorizadoError`, `ProibidoError`, `NaoEncontradoError` e `ConflitoError` herdam de `AppError`; pastas por responsabilidade |
 
 ## Evolução do Projeto
 

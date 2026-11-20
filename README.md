@@ -43,6 +43,24 @@ Na edição, nome, CPF e senha são obrigatórios. Editar outro usuário retorna
 
 Rotas protegidas exigem o cabeçalho `Authorization: Bearer <token>`.
 
+### CRUDs
+
+Todas as rotas exigem login. Consultar é liberado para qualquer usuário logado; criar, editar e excluir é só para admin.
+
+| Método | Rota                 | Acesso | Descrição |
+|--------|----------------------|--------|-----------|
+| GET    | `/categorias`        | logado | Lista paginada (`?pagina=1&limite=10`, máximo 50) |
+| GET    | `/categorias/:id`    | logado | Detalhe |
+| POST   | `/categorias`        | admin  | Cria (`nome` obrigatório, `descricao` opcional) |
+| PUT    | `/categorias/:id`    | admin  | Edita |
+| DELETE | `/categorias/:id`    | admin  | Exclui (bloqueado se houver livros na categoria) |
+
+As listagens retornam:
+
+```json
+{ "itens": [], "pagina": 1, "limite": 10, "total": 0, "totalPaginas": 0 }
+```
+
 ### Administrador
 
 O primeiro administrador é criado ao iniciar a API, com os dados de `ADMIN_NOME`, `ADMIN_EMAIL`, `ADMIN_SENHA` e `ADMIN_CPF` do `.env`. A senha passa pela mesma validação de nível do cadastro e é salva com hash. O cadastro público sempre cria usuários com perfil `cliente`.
@@ -85,14 +103,22 @@ O primeiro administrador é criado ao iniciar a API, com os dados de `ADMIN_NOME
 ```
 src/
   app.ts
-  controllers/
+  controllers/   CrudController genérico e UsuarioController
   database/      conexão, criação das tabelas e do administrador
-  errors/
+  errors/        AppError (abstrata) e erros específicos (400, 401, 403, 404, 409)
   middlewares/   autenticação (JWT) e perfil
-  models/        Usuario, Cpf, Email, Senha
-  repositories/
+  models/        Entidade (abstrata), Usuario, Categoria, Cpf, Email, Senha
+  repositories/  interface Repositorio<T>, RepositorioMySQL<T> (abstrata) e repositórios concretos
   routes/
-  services/
-  types/
-  utils/         geração e verificação do token
+  services/      CrudService<T> (abstrata) e services concretos
+  types/         paginação
+  utils/         token e leitura da entrada
+```
+
+### Como os CRUDs são organizados
+
+- `Entidade` guarda `id` e `criadoEm`; cada entidade herda dela e define o próprio `toJSON()`.
+- `Repositorio<T>` é o contrato que os services usam. `RepositorioMySQL<T>` implementa o SQL comum (inserir, atualizar, buscar, listar paginado e excluir), e cada repositório informa só a tabela e como converter linhas.
+- `CrudService<T>` concentra buscar, listar e excluir com resposta 404 para registros inexistentes; cada service implementa `criar` e `atualizar`.
+- `CrudController<T>` e `rotasCrud()` são os mesmos para todos os recursos.
 ```
