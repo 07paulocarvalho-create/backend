@@ -130,6 +130,10 @@ export class Livro extends Entidade {
         return "O ISBN deve ter 10 ou 13 dígitos";
     }
 
+    get titulo(): string {
+        return this.#titulo;
+    }
+
     // Acesso controlado: o preço é lido pelo pedido para registrar o valor no momento da compra
     get preco(): number {
         return this.#preco;

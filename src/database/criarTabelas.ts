@@ -36,6 +36,23 @@ const TABELAS = [
         FOREIGN KEY (autor_id) REFERENCES autores(id),
         FOREIGN KEY (categoria_id) REFERENCES categorias(id)
     )`,
+    `CREATE TABLE IF NOT EXISTS pedidos (
+        id CHAR(36) PRIMARY KEY,
+        usuario_id CHAR(36) NOT NULL,
+        status ENUM('pendente', 'pago', 'enviado', 'entregue', 'cancelado') NOT NULL DEFAULT 'pendente',
+        total DECIMAL(10, 2) NOT NULL CHECK (total >= 0),
+        criado_em DATETIME(3) NOT NULL,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    )`,
+    `CREATE TABLE IF NOT EXISTS pedido_itens (
+        pedido_id CHAR(36) NOT NULL,
+        livro_id CHAR(36) NOT NULL,
+        quantidade INT UNSIGNED NOT NULL CHECK (quantidade > 0),
+        preco_unitario DECIMAL(10, 2) NOT NULL,
+        PRIMARY KEY (pedido_id, livro_id),
+        FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
+        FOREIGN KEY (livro_id) REFERENCES livros(id)
+    )`,
 ];
 
 export async function criarTabelas(): Promise<void> {
