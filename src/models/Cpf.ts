@@ -1,4 +1,4 @@
-import { AppError } from "../errors/AppError";
+import { ValidacaoError } from "../errors/ValidacaoError";
 
 export class Cpf {
     // Encapsulamento: valor guardado em campo privado nativo, sem setter
@@ -11,7 +11,7 @@ export class Cpf {
     static criar(valor: string): Cpf {
         const erro = Cpf.validar(valor);
         if (erro) {
-            throw new AppError(erro, 400, { cpf: erro });
+            throw new ValidacaoError({ cpf: erro }, erro);
         }
         return new Cpf(Cpf.somenteNumeros(valor));
     }

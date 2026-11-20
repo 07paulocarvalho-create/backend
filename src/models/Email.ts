@@ -1,4 +1,4 @@
-import { AppError } from "../errors/AppError";
+import { ValidacaoError } from "../errors/ValidacaoError";
 
 const FORMATO_EMAIL = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\.[a-z]{2,}$/;
 
@@ -13,7 +13,7 @@ export class Email {
     static criar(valor: string): Email {
         const erro = Email.validar(valor);
         if (erro) {
-            throw new AppError(erro, 400, { email: erro });
+            throw new ValidacaoError({ email: erro }, erro);
         }
         return new Email(Email.normalizar(valor));
     }

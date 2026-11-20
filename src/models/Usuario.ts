@@ -1,7 +1,7 @@
-import { randomUUID } from "crypto";
-import { AppError } from "../errors/AppError";
+import { ValidacaoError } from "../errors/ValidacaoError";
 import { Cpf } from "./Cpf";
 import { Email } from "./Email";
+import { Entidade } from "./Entidade";
 import { Senha } from "./Senha";
 
 export type Perfil = "admin" | "cliente";
@@ -35,26 +35,23 @@ export type UsuarioResposta = {
     criadoEm: string;
 };
 
-export class Usuario {
+export class Usuario extends Entidade {
     // Encapsulamento e proteção do estado: campos privados nativos
-    readonly #id: string;
     #nome: string;
     // Email readonly: não existe forma de alterá-lo depois do cadastro
     readonly #email: Email;
     #cpf: Cpf;
     #senha: Senha;
     readonly #perfil: Perfil;
-    readonly #criadoEm: Date;
 
     // Construtor limpo: apenas inicializa as propriedades
-    constructor({ id = randomUUID(), nome, email, cpf, senha, perfil = "cliente", criadoEm = new Date() }: DadosUsuario) {
-        this.#id = id;
+    constructor({ id, nome, email, cpf, senha, perfil = "cliente", criadoEm }: DadosUsuario) {
+        super(id, criadoEm);
         this.#nome = Usuario.normalizarNome(nome);
         this.#email = email;
         this.#cpf = cpf;
         this.#senha = senha;
         this.#perfil = perfil;
-        this.#criadoEm = criadoEm;
     }
 
     static restaurar(registro: UsuarioRegistro): Usuario {
@@ -88,11 +85,6 @@ export class Usuario {
         return valor.trim().replace(/\s+/g, " ");
     }
 
-    // Acesso controlado: id somente leitura
-    get id(): string {
-        return this.#id;
-    }
-
     // Acesso controlado: perfil só pode ser lido, nunca alterado pela API
     get perfil(): Perfil {
         return this.#perfil;
@@ -106,7 +98,7 @@ export class Usuario {
     set nome(valor: string) {
         const erro = Usuario.validarNome(valor);
         if (erro) {
-            throw new AppError(erro, 400, { nome: erro });
+            throw new ValidacaoError({ nome: erro }, erro);
         }
         this.#nome = Usuario.normalizarNome(valor);
     }
@@ -129,25 +121,25 @@ export class Usuario {
 
     paraRegistro(): UsuarioRegistro {
         return {
-            id: this.#id,
+            id: this.id,
             nome: this.#nome,
             email: this.#email.endereco,
             cpf: this.#cpf.formatado,
             senha: this.#senha.paraArmazenamento(),
             perfil: this.#perfil,
-            criado_em: this.#criadoEm,
+            criado_em: this.criadoEm,
         };
     }
 
     // Exposição apenas dos dados públicos, a senha nunca vai para a resposta
     toJSON(): UsuarioResposta {
         return {
-            id: this.#id,
+            id: this.id,
             nome: this.#nome,
             email: this.#email.endereco,
             cpf: this.#cpf.formatado,
             perfil: this.#perfil,
-            criadoEm: this.#criadoEm.toISOString(),
+            criadoEm: this.criadoEm.toISOString(),
         };
     }
 }

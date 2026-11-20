@@ -1,9 +1,14 @@
-import { AppError, ErrosPorCampo } from "../errors/AppError";
+import { ConflitoError } from "../errors/ConflitoError";
+import { NaoAutorizadoError } from "../errors/NaoAutorizadoError";
+import { NaoEncontradoError } from "../errors/NaoEncontradoError";
+import { ProibidoError } from "../errors/ProibidoError";
+import { ValidacaoError } from "../errors/ValidacaoError";
 import { Cpf } from "../models/Cpf";
 import { Email } from "../models/Email";
 import { Senha } from "../models/Senha";
 import { Usuario } from "../models/Usuario";
 import { UsuarioRepository } from "../repositories/UsuarioRepository";
+import { texto } from "../utils/entrada";
 import { gerarToken } from "../utils/token";
 
 export type UsuarioEntrada = {
@@ -18,10 +23,6 @@ export type LoginEntrada = {
     senha?: unknown;
 };
 
-function texto(valor: unknown): string {
-    return typeof valor === "string" ? valor : "";
-}
-
 export class UsuarioService {
     // Encapsulamento: dependência privada injetada pelo construtor
     constructor(private readonly repositorio: UsuarioRepository) {}
@@ -33,7 +34,7 @@ export class UsuarioService {
         const senha = texto(entrada.senha);
         const cpf = texto(entrada.cpf);
 
-        this.validarCampos({
+        ValidacaoError.verificar({
             nome: Usuario.validarNome(nome),
             email: Email.validar(email),
             senha: Senha.validar(senha),
@@ -44,11 +45,11 @@ export class UsuarioService {
         const cpfUsuario = Cpf.criar(cpf);
 
         if (await this.repositorio.buscarPorEmail(emailUsuario)) {
-            throw new AppError("Email já cadastrado", 409, { email: "Este email já está em uso" });
+            throw new ConflitoError("Email já cadastrado", { email: "Este email já está em uso" });
         }
 
         if (await this.repositorio.buscarPorCpf(cpfUsuario)) {
-            throw new AppError("CPF já cadastrado", 409, { cpf: "Este CPF já está em uso" });
+            throw new ConflitoError("CPF já cadastrado", { cpf: "Este CPF já está em uso" });
         }
 
         const usuario = new Usuario({
@@ -68,19 +69,19 @@ export class UsuarioService {
         const senha = texto(entrada.senha);
 
         if (!email || !senha) {
-            throw new AppError("Informe email e senha", 400);
+            throw new ValidacaoError({}, "Informe email e senha");
         }
 
         const erroEmail = Email.validar(email);
         if (erroEmail) {
-            throw new AppError(erroEmail, 400, { email: erroEmail });
+            throw new ValidacaoError({ email: erroEmail }, erroEmail);
         }
 
         const usuario = await this.repositorio.buscarPorEmail(Email.criar(email));
 
         // Logar apenas usuário existente
         if (!usuario || !usuario.autenticar(senha)) {
-            throw new AppError("Email ou senha incorretos", 401);
+            throw new NaoAutorizadoError("Email ou senha incorretos");
         }
 
         const token = gerarToken({ id: usuario.id, perfil: usuario.perfil });
@@ -90,7 +91,7 @@ export class UsuarioService {
     async buscarLogado(idLogado: string): Promise<Usuario> {
         const usuario = await this.repositorio.buscarPorId(idLogado);
         if (!usuario) {
-            throw new AppError("Usuário não encontrado", 404);
+            throw new NaoEncontradoError("Usuário não encontrado");
         }
         return usuario;
     }
@@ -99,14 +100,14 @@ export class UsuarioService {
     async atualizar(id: string, idLogado: string, entrada: UsuarioEntrada): Promise<Usuario> {
         // Só pode editar o próprio usuário
         if (id !== idLogado) {
-            throw new AppError("Você só pode editar o seu próprio usuário", 403);
+            throw new ProibidoError("Você só pode editar o seu próprio usuário");
         }
 
         const usuario = await this.buscarLogado(idLogado);
 
         // Não permitir que o usuário altere o email
         if (entrada.email !== undefined && !usuario.possuiEmail(texto(entrada.email))) {
-            throw new AppError("O email não pode ser alterado", 400, { email: "O email não pode ser alterado" });
+            throw new ValidacaoError({ email: "O email não pode ser alterado" }, "O email não pode ser alterado");
         }
 
         const nome = texto(entrada.nome);
@@ -114,7 +115,7 @@ export class UsuarioService {
         const cpf = texto(entrada.cpf);
 
         // Todos os campos obrigatórios, com validação de CPF e de nível de senha
-        this.validarCampos({
+        ValidacaoError.verificar({
             nome: Usuario.validarNome(nome),
             senha: Senha.validar(senha),
             cpf: Cpf.validar(cpf),
@@ -124,7 +125,7 @@ export class UsuarioService {
         const donoDoCpf = await this.repositorio.buscarPorCpf(cpfUsuario);
 
         if (donoDoCpf && donoDoCpf.id !== usuario.id) {
-            throw new AppError("CPF já cadastrado", 409, { cpf: "Este CPF já está em uso" });
+            throw new ConflitoError("CPF já cadastrado", { cpf: "Este CPF já está em uso" });
         }
 
         usuario.nome = nome;
@@ -137,19 +138,5 @@ export class UsuarioService {
 
     async listar(): Promise<Usuario[]> {
         return this.repositorio.listar();
-    }
-
-    private validarCampos(validacoes: Record<string, string | null>): void {
-        const erros: ErrosPorCampo = {};
-
-        for (const [campo, erro] of Object.entries(validacoes)) {
-            if (erro) {
-                erros[campo] = erro;
-            }
-        }
-
-        if (Object.keys(erros).length > 0) {
-            throw new AppError("Dados inválidos", 400, erros);
-        }
     }
 }

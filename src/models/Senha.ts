@@ -1,5 +1,5 @@
 import { randomBytes, scryptSync, timingSafeEqual } from "crypto";
-import { AppError } from "../errors/AppError";
+import { ValidacaoError } from "../errors/ValidacaoError";
 
 export type NivelSenha = "fraca" | "media" | "forte";
 
@@ -26,7 +26,7 @@ export class Senha {
     static criar(texto: string): Senha {
         const erro = Senha.validar(texto);
         if (erro) {
-            throw new AppError(erro, 400, { senha: erro });
+            throw new ValidacaoError({ senha: erro }, erro);
         }
         const salt = randomBytes(16).toString("hex");
         return new Senha(Senha.gerarHash(texto, salt), salt);

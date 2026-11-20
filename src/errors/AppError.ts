@@ -1,13 +1,13 @@
 export type ErrosPorCampo = Record<string, string>;
 
-export class AppError extends Error {
-    readonly status: number;
+// Tratamento de exceções: classe base abstrata, cada erro concreto define o seu status HTTP
+export abstract class AppError extends Error {
+    abstract readonly status: number;
     readonly erros?: ErrosPorCampo;
 
-    constructor(mensagem: string, status = 400, erros?: ErrosPorCampo) {
+    constructor(mensagem: string, erros?: ErrosPorCampo) {
         super(mensagem);
-        this.name = "AppError";
-        this.status = status;
+        this.name = new.target.name;
         this.erros = erros;
     }
 }
