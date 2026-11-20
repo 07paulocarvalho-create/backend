@@ -31,11 +31,17 @@ O `npm run db` usa o `docker-compose.dev.yml`, que libera a porta do MySQL apena
 
 ## Rotas
 
-| Método | Rota        | Descrição                  |
-|--------|-------------|----------------------------|
-| POST   | `/usuarios` | Cadastra um usuário        |
-| GET    | `/usuarios` | Lista os usuários          |
-| POST   | `/login`    | Autentica com email/senha  |
+| Método | Rota        | Acesso  | Descrição                              |
+|--------|-------------|---------|----------------------------------------|
+| POST   | `/usuarios` | público | Cadastra um cliente                    |
+| POST   | `/login`    | público | Autentica e devolve o token JWT        |
+| GET    | `/usuarios` | admin   | Lista os usuários                      |
+
+Rotas protegidas exigem o cabeçalho `Authorization: Bearer <token>`.
+
+### Administrador
+
+O primeiro administrador é criado ao iniciar a API, com os dados de `ADMIN_NOME`, `ADMIN_EMAIL`, `ADMIN_SENHA` e `ADMIN_CPF` do `.env`. A senha passa pela mesma validação de nível do cadastro e é salva com hash. O cadastro público sempre cria usuários com perfil `cliente`.
 
 ### Exemplo de cadastro
 
@@ -66,7 +72,8 @@ O `npm run db` usa o `docker-compose.dev.yml`, que libera a porta do MySQL apena
 ```
 
 - `400` dados inválidos
-- `401` login incorreto
+- `401` login incorreto, token ausente ou expirado
+- `403` usuário sem permissão
 - `409` email ou CPF já cadastrado
 
 ## Estrutura
@@ -75,10 +82,13 @@ O `npm run db` usa o `docker-compose.dev.yml`, que libera a porta do MySQL apena
 src/
   app.ts
   controllers/
-  database/      conexão e criação das tabelas
+  database/      conexão, criação das tabelas e do administrador
   errors/
+  middlewares/   autenticação (JWT) e perfil
   models/        Usuario, Cpf, Email, Senha
   repositories/
   routes/
   services/
+  types/
+  utils/         geração e verificação do token
 ```

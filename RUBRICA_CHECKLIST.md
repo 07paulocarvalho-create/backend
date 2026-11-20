@@ -6,15 +6,16 @@ Repositórios: `backend/` (API, Docker, Nginx, agentes) e `frontend/` (React).
 
 ## Back-end com IA Generativa
 
-### Autenticação - [~]
+### Autenticação - [x]
 
 | Requisito | Estado | Onde | Observação |
 |---|---|---|---|
 | Login com email e senha | [x] | `src/services/UsuarioService.ts` (`autenticar`), `POST /login` | Testado via requisições HTTP |
 | Senha criptografada no banco | [x] | `src/models/Senha.ts`, `src/repositories/UsuarioRepository.ts` | Coluna `senha` guarda `salt:hash` (scrypt). Conferido direto no MySQL: o texto da senha não aparece |
 | Validação de email (regex) | [x] | `src/models/Email.ts` | |
-| Retorno JWT | [ ] | | |
-| Logar apenas usuário existente | [x] | `src/services/UsuarioService.ts` | Usuário inexistente ou senha errada retorna 401 |
+| Retorno JWT | [x] | `src/utils/token.ts`, `src/middlewares/autenticacao.ts` | Token com `sub` (id) e `perfil`, validade de 8h. Testado: sem token e token falso retornam 401; cliente em rota de admin retorna 403 |
+| Logar apenas usuário existente | [x] | `src/services/UsuarioService.ts` | Usuário inexistente ou senha errada retorna 401; email fora do padrão retorna 400 |
+| Perfis e primeiro administrador | [x] | `src/database/criarAdmin.ts` | Admin criado a partir do `.env` sem duplicar ao reiniciar; cadastro público não aceita `perfil: admin` |
 
 ### Cadastro de Usuário - [x]
 
