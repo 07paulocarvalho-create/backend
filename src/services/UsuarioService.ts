@@ -4,6 +4,7 @@ import { Email } from "../models/Email";
 import { Senha } from "../models/Senha";
 import { Usuario } from "../models/Usuario";
 import { UsuarioRepository } from "../repositories/UsuarioRepository";
+import { gerarToken } from "../utils/token";
 
 export type CadastroUsuarioEntrada = {
     nome?: unknown;
@@ -72,7 +73,8 @@ export class UsuarioService {
         return usuario;
     }
 
-    async autenticar(entrada: LoginEntrada): Promise<Usuario> {
+    // Autenticação: login com email e senha
+    async autenticar(entrada: LoginEntrada): Promise<{ token: string; usuario: Usuario }> {
         const email = texto(entrada.email);
         const senha = texto(entrada.senha);
 
@@ -81,13 +83,19 @@ export class UsuarioService {
         }
 
         const erroEmail = Email.validar(email);
-        const usuario = erroEmail ? undefined : await this.repositorio.buscarPorEmail(Email.criar(email));
+        if (erroEmail) {
+            throw new AppError(erroEmail, 400, { email: erroEmail });
+        }
 
+        const usuario = await this.repositorio.buscarPorEmail(Email.criar(email));
+
+        // Logar apenas usuário existente
         if (!usuario || !usuario.autenticar(senha)) {
             throw new AppError("Email ou senha incorretos", 401);
         }
 
-        return usuario;
+        const token = gerarToken({ id: usuario.id, perfil: usuario.perfil });
+        return { token, usuario };
     }
 
     async listar(): Promise<Usuario[]> {

@@ -7,6 +7,7 @@ const TABELAS = [
         email VARCHAR(254) NOT NULL UNIQUE,
         cpf CHAR(14) NOT NULL UNIQUE,
         senha VARCHAR(161) NOT NULL,
+        perfil ENUM('admin', 'cliente') NOT NULL DEFAULT 'cliente',
         criado_em DATETIME(3) NOT NULL
     )`,
 ];

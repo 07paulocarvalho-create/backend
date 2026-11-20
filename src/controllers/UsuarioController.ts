@@ -10,8 +10,8 @@ export class UsuarioController {
     };
 
     login = async (req: Request, res: Response) => {
-        const usuario = await this.service.autenticar(req.body ?? {});
-        res.json({ mensagem: "Login realizado com sucesso", usuario });
+        const { token, usuario } = await this.service.autenticar(req.body ?? {});
+        res.json({ mensagem: "Login realizado com sucesso", token, usuario });
     };
 
     listar = async (_req: Request, res: Response) => {

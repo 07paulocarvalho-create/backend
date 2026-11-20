@@ -4,12 +4,15 @@ import { Cpf } from "./Cpf";
 import { Email } from "./Email";
 import { Senha } from "./Senha";
 
+export type Perfil = "admin" | "cliente";
+
 export type DadosUsuario = {
     id?: string;
     nome: string;
     email: Email;
     cpf: Cpf;
     senha: Senha;
+    perfil?: Perfil;
     criadoEm?: Date;
 };
 
@@ -19,6 +22,7 @@ export type UsuarioRegistro = {
     email: string;
     cpf: string;
     senha: string;
+    perfil: Perfil;
     criado_em: Date;
 };
 
@@ -27,6 +31,7 @@ export type UsuarioResposta = {
     nome: string;
     email: string;
     cpf: string;
+    perfil: Perfil;
     criadoEm: string;
 };
 
@@ -37,15 +42,17 @@ export class Usuario {
     readonly #email: Email;
     readonly #cpf: Cpf;
     readonly #senha: Senha;
+    readonly #perfil: Perfil;
     readonly #criadoEm: Date;
 
     // Construtor limpo: apenas inicializa as propriedades
-    constructor({ id = randomUUID(), nome, email, cpf, senha, criadoEm = new Date() }: DadosUsuario) {
+    constructor({ id = randomUUID(), nome, email, cpf, senha, perfil = "cliente", criadoEm = new Date() }: DadosUsuario) {
         this.#id = id;
         this.#nome = Usuario.normalizarNome(nome);
         this.#email = email;
         this.#cpf = cpf;
         this.#senha = senha;
+        this.#perfil = perfil;
         this.#criadoEm = criadoEm;
     }
 
@@ -56,6 +63,7 @@ export class Usuario {
             email: Email.criar(registro.email),
             cpf: Cpf.criar(registro.cpf),
             senha: Senha.restaurar(registro.senha),
+            perfil: registro.perfil,
             criadoEm: registro.criado_em,
         });
     }
@@ -84,6 +92,11 @@ export class Usuario {
         return this.#id;
     }
 
+    // Acesso controlado: perfil só pode ser lido, nunca alterado pela API
+    get perfil(): Perfil {
+        return this.#perfil;
+    }
+
     get nome(): string {
         return this.#nome;
     }
@@ -108,6 +121,7 @@ export class Usuario {
             email: this.#email.endereco,
             cpf: this.#cpf.formatado,
             senha: this.#senha.paraArmazenamento(),
+            perfil: this.#perfil,
             criado_em: this.#criadoEm,
         };
     }
@@ -119,6 +133,7 @@ export class Usuario {
             nome: this.#nome,
             email: this.#email.endereco,
             cpf: this.#cpf.formatado,
+            perfil: this.#perfil,
             criadoEm: this.#criadoEm.toISOString(),
         };
     }

@@ -8,11 +8,11 @@ type LinhaUsuario = UsuarioRegistro & RowDataPacket;
 
 export class UsuarioRepository {
     async salvar(usuario: Usuario): Promise<void> {
-        const { id, nome, email, cpf, senha, criado_em } = usuario.paraRegistro();
+        const { id, nome, email, cpf, senha, perfil, criado_em } = usuario.paraRegistro();
 
         await conexao.execute(
-            "INSERT INTO usuarios (id, nome, email, cpf, senha, criado_em) VALUES (?, ?, ?, ?, ?, ?)",
-            [id, nome, email, cpf, senha, criado_em]
+            "INSERT INTO usuarios (id, nome, email, cpf, senha, perfil, criado_em) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [id, nome, email, cpf, senha, perfil, criado_em]
         );
     }
 

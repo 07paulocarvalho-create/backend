@@ -1,7 +1,9 @@
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
+import { criarAdmin } from "./database/criarAdmin";
 import { criarTabelas } from "./database/criarTabelas";
 import { AppError } from "./errors/AppError";
+import { UsuarioRepository } from "./repositories/UsuarioRepository";
 import { usuarioRoutes } from "./routes/usuarioRoutes";
 
 const app = express();
@@ -11,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (_req, res) => {
-    res.json({ mensagem: "API de cadastro de usuários" });
+    res.json({ mensagem: "API da Livraria Entre Páginas" });
 });
 
 app.use(usuarioRoutes);
@@ -41,7 +43,12 @@ app.use((erro: unknown, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 async function iniciar() {
+    if (!process.env.JWT_SECRET) {
+        throw new Error("JWT_SECRET não foi definido no .env");
+    }
+
     await criarTabelas();
+    await criarAdmin(new UsuarioRepository());
 
     app.listen(PORTA, () => {
         console.log(`Servidor rodando na porta ${PORTA}`);
