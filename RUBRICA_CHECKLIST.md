@@ -66,15 +66,15 @@ CRUDs: Categorias, Autores, Livros e Pedidos (com itens do pedido).
 
 Itens com `[~]` têm a lógica testada (schemas e chamadas à API pelo Nginx), mas falta conferir na tela.
 
-### Autenticação - [~]
+### Autenticação - [x]
 
 | Requisito | Estado | Onde | Observação |
 |---|---|---|---|
-| Campos para email e senha | [~] | `src/pages/LoginPage.tsx` | |
-| Validação de email (regex) | [~] | `src/pages/LoginPage.tsx`, `src/utils/validacoes.ts` | `emailValido` testado com casos válidos e inválidos |
-| Token no localStorage | [~] | `src/api/token.ts`, `src/contexts/AuthProvider.tsx` | Interceptor do axios envia o token; 401 com token limpa e volta ao login |
-| Erros da API de forma amigável | [~] | `src/api/erros.ts`, `src/componentes/Alerta.tsx` | Mensagem geral e por campo; servidor fora do ar tem mensagem própria |
-| Redirecionar para a área logada | [~] | `src/pages/LoginPage.tsx`, `src/componentes/RotaPrivada.tsx` | Volta para a página que a pessoa tentou abrir |
+| Campos para email e senha | [x] | `src/pages/LoginPage.tsx` | |
+| Validação de email (regex) | [x] | `src/pages/LoginPage.tsx`, `src/utils/validacoes.ts` | `emailValido` testado com casos válidos e inválidos |
+| Token no localStorage | [x] | `src/api/token.ts`, `src/contexts/AuthProvider.tsx` | Interceptor do axios envia o token; 401 com token limpa e volta ao login |
+| Erros da API de forma amigável | [x] | `src/api/erros.ts`, `src/componentes/Alerta.tsx` | Mensagem geral e por campo; servidor fora do ar tem mensagem própria |
+| Redirecionar para a área logada | [x] | `src/pages/LoginPage.tsx`, `src/componentes/RotaPrivada.tsx` | Login testado na tela em http://localhost:8080 (Docker) |
 
 ### Cadastro de Usuário - [x]
 
