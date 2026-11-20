@@ -54,6 +54,18 @@ Todas as rotas exigem login. Consultar é liberado para qualquer usuário logado
 | POST   | `/categorias`        | admin  | Cria (`nome` obrigatório, `descricao` opcional) |
 | PUT    | `/categorias/:id`    | admin  | Edita |
 | DELETE | `/categorias/:id`    | admin  | Exclui (bloqueado se houver livros na categoria) |
+| GET    | `/autores`           | logado | Lista paginada |
+| GET    | `/autores/:id`       | logado | Detalhe |
+| POST   | `/autores`           | admin  | Cria (`nome` obrigatório, `biografia` opcional) |
+| PUT    | `/autores/:id`       | admin  | Edita |
+| DELETE | `/autores/:id`       | admin  | Exclui (bloqueado se houver livros do autor) |
+| GET    | `/livros`            | logado | Lista paginada, com filtros `?categoriaId=` e `?autorId=` |
+| GET    | `/livros/:id`        | logado | Detalhe com nome do autor e da categoria |
+| POST   | `/livros`            | admin  | Cria |
+| PUT    | `/livros/:id`        | admin  | Edita |
+| DELETE | `/livros/:id`        | admin  | Exclui (bloqueado se o livro estiver em pedidos) |
+
+Livro: `titulo`, `isbn`, `preco`, `estoque`, `autorId` e `categoriaId` são obrigatórios; `descricao` e `capaUrl` são opcionais. O preço não pode ser negativo, o estoque é inteiro e não negativo, e o ISBN (10 ou 13 dígitos) é validado pelos dígitos verificadores e não pode se repetir.
 
 As listagens retornam:
 
@@ -107,7 +119,7 @@ src/
   database/      conexão, criação das tabelas e do administrador
   errors/        AppError (abstrata) e erros específicos (400, 401, 403, 404, 409)
   middlewares/   autenticação (JWT) e perfil
-  models/        Entidade (abstrata), Usuario, Categoria, Cpf, Email, Senha
+  models/        Entidade (abstrata), Usuario, Categoria, Autor, Livro, Cpf, Email, Senha
   repositories/  interface Repositorio<T>, RepositorioMySQL<T> (abstrata) e repositórios concretos
   routes/
   services/      CrudService<T> (abstrata) e services concretos

@@ -46,11 +46,11 @@ CRUDs planejados: Categorias, Autores, Livros e Pedidos (com itens do pedido).
 
 | Requisito | Estado | Onde | Observação |
 |---|---|---|---|
-| 4 CRUDs completos | [~] | `src/services/CategoriaService.ts` | 1 de 4: Categorias concluído e testado |
+| 4 CRUDs completos | [~] | `src/services/CategoriaService.ts`, `AutorService.ts`, `LivroService.ts` | 3 de 4: Categorias, Autores e Livros concluídos e testados; falta Pedidos |
 | Todas as rotas autenticadas | [x] | `src/routes/crudRoutes.ts` | `autenticar` em todas as rotas; escrita só para admin. Testado: sem token 401, cliente escrevendo 403 |
 | Paginação das listagens | [x] | `src/repositories/RepositorioMySQL.ts`, `src/types/paginacao.ts` | `?pagina` e `?limite` (máx. 50), com `total` e `totalPaginas`. Testado com 12 categorias |
 | Não editar/deletar recursos inexistentes | [x] | `src/services/CrudService.ts` | PUT e DELETE de id inexistente retornam 404 |
-| Ao menos 1 relacionamento | [ ] | | Livro → Autor/Categoria, Pedido → Usuário, Item → Livro |
+| Ao menos 1 relacionamento | [x] | `src/database/criarTabelas.ts`, `src/repositories/LivroRepository.ts` | Livro → Autor e Livro → Categoria com chave estrangeira. Testado: autor/categoria inexistentes retornam 400, excluir categoria ou autor com livros retorna 409, listagem traz os nomes via JOIN e filtra por categoria. Pedido → Usuário e Item → Livro virão com Pedidos |
 
 ### Configuração de Agentes - [ ]
 
