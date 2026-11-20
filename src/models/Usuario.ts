@@ -39,9 +39,10 @@ export class Usuario {
     // Encapsulamento e proteção do estado: campos privados nativos
     readonly #id: string;
     #nome: string;
+    // Email readonly: não existe forma de alterá-lo depois do cadastro
     readonly #email: Email;
-    readonly #cpf: Cpf;
-    readonly #senha: Senha;
+    #cpf: Cpf;
+    #senha: Senha;
     readonly #perfil: Perfil;
     readonly #criadoEm: Date;
 
@@ -108,6 +109,18 @@ export class Usuario {
             throw new AppError(erro, 400, { nome: erro });
         }
         this.#nome = Usuario.normalizarNome(valor);
+    }
+
+    alterarCpf(cpf: Cpf): void {
+        this.#cpf = cpf;
+    }
+
+    alterarSenha(senha: Senha): void {
+        this.#senha = senha;
+    }
+
+    possuiEmail(endereco: string): boolean {
+        return this.#email.endereco === endereco.trim().toLowerCase();
     }
 
     autenticar(senha: string): boolean {

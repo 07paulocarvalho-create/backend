@@ -14,6 +14,15 @@ export class UsuarioController {
         res.json({ mensagem: "Login realizado com sucesso", token, usuario });
     };
 
+    buscarLogado = async (req: Request, res: Response) => {
+        res.json(await this.service.buscarLogado(req.usuario!.id));
+    };
+
+    atualizar = async (req: Request<{ id: string }>, res: Response) => {
+        const usuario = await this.service.atualizar(req.params.id, req.usuario!.id, req.body ?? {});
+        res.json({ mensagem: "Dados atualizados com sucesso", usuario });
+    };
+
     listar = async (_req: Request, res: Response) => {
         res.json(await this.service.listar());
     };

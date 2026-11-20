@@ -16,6 +16,19 @@ export class UsuarioRepository {
         );
     }
 
+    async atualizar(usuario: Usuario): Promise<void> {
+        const { id, nome, cpf, senha } = usuario.paraRegistro();
+
+        await conexao.execute(
+            "UPDATE usuarios SET nome = ?, cpf = ?, senha = ? WHERE id = ?",
+            [nome, cpf, senha, id]
+        );
+    }
+
+    async buscarPorId(id: string): Promise<Usuario | undefined> {
+        return this.buscarUm("SELECT * FROM usuarios WHERE id = ?", id);
+    }
+
     async buscarPorEmail(email: Email): Promise<Usuario | undefined> {
         return this.buscarUm("SELECT * FROM usuarios WHERE email = ?", email.endereco);
     }
