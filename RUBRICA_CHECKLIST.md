@@ -97,23 +97,25 @@ Itens com `[~]` têm a lógica testada (schemas e chamadas à API pelo Nginx), m
 | Confirmação da senha | [~] | `src/schemas/campos.ts` | Schema testado |
 | Não permitir alterar o email | [~] | `src/pages/PerfilPage.tsx` | Email só aparece para leitura e não é enviado |
 
-### CRUDs Completos - [ ]
+### CRUDs Completos - [~]
+
+Lógica testada: os dados que saem dos schemas foram enviados à API como o front envia (criar, editar, listar com filtro e paginação, pedido, status e exclusão). Falta conferir as telas no navegador.
 
 | Requisito | Estado | Onde | Observação |
 |---|---|---|---|
-| 4 CRUDs completos | [ ] | | Próxima etapa |
-| Paginação das listagens | [ ] | | |
-| Validação dos campos obrigatórios | [ ] | | |
-| Listagem e cadastro/edição em telas separadas | [ ] | | |
+| 4 CRUDs completos | [~] | `src/pages/` (Categorias, Autores, Livros, Pedidos) | Listar, cadastrar, editar e excluir; em pedidos, a edição é o status na tela de detalhe |
+| Paginação das listagens | [~] | `src/hooks/useListagem.ts`, `src/componentes/Paginacao.tsx` | 10 por página; `?pagina` e `?limite` conferidos passando pelo Nginx |
+| Validação dos campos obrigatórios | [~] | `src/schemas/livrariaSchemas.ts`, `src/pages/PedidoFormPage.tsx` | Schemas testados: vazios, preço negativo, estoque fracionado, ISBN e URL inválidos; pedido valida livro, quantidade e estoque |
+| Listagem e cadastro/edição em telas separadas | [x] | `src/main.tsx` | Rotas `/recurso` (lista) e `/recurso/novo`, `/recurso/:id/editar` (formulário) |
 
-### Componentização - [~]
+### Componentização - [x]
 
 | Requisito | Estado | Onde | Observação |
 |---|---|---|---|
-| Componentes genéricos e reutilizáveis | [~] | `src/componentes/` | `Campo`, `Alerta`, `ForcaSenha`, `Layout`, `RotaPrivada`; faltam tabela e paginação |
-| Telas compostas por vários componentes | [~] | `src/pages/PerfilPage.tsx`, `CadastroPage.tsx` | |
+| Componentes genéricos e reutilizáveis | [x] | `src/componentes/` | `Tabela<T>` (categorias, autores, pedidos, itens), `Paginacao`, `Campo`, `CampoSelecao`, `CampoArea`, `AcoesFormulario`, `AcoesLinha`, `CabecalhoPagina`, `Alerta`, `ForcaSenha`; hooks genéricos `useListagem<T>`, `useRegistro<T>`, `useFormulario` |
+| Telas compostas por vários componentes | [x] | `src/pages/` | Ex.: `LivrosPage` usa `CabecalhoPagina`, `CampoSelecao`, `Alerta`, `Carregando`, `LivroCard` e `Paginacao` |
 | Componentes e páginas em pastas separadas | [x] | `src/componentes/`, `src/pages/` | |
-| Componentes exclusivos da página em funções separadas | [~] | `src/pages/PerfilPage.tsx` (`DadosConta`), `src/pages/InicioPage.tsx` (`Atalho`) | |
+| Componentes exclusivos da página em funções separadas | [x] | `src/pages/` | `LivroCard` (LivrosPage), `LinhaItem` (PedidoFormPage), `AlterarStatus` (PedidoDetalhePage), `FormularioLivro`/`FormularioAutor`/`FormularioCategoria`, `DadosConta`, `Atalho` |
 
 ## Ferramentas DevOps - [x]
 
@@ -122,7 +124,7 @@ Itens com `[~]` têm a lógica testada (schemas e chamadas à API pelo Nginx), m
 | Organização do docker-compose.yml | [x] | `docker-compose.yml` | Quatro serviços, volume, duas redes, variáveis vindas do `.env`, healthcheck do MySQL e `depends_on` |
 | Integração entre serviços | [x] | `docker-compose.yml`, `nginx/default.conf` | Backend usa `DB_HOST=mysql`; frontend compilado com `VITE_API_URL=/api`; cadastro, login e edição testados via `localhost:8080/api` |
 | Persistência no MySQL com volume | [x] | volume `mysql_dados` | Testado: cadastro, `docker compose down`, `up` e login com o mesmo usuário |
-| Nginx como proxy reverso | [x] | `nginx/default.conf` | `/api/*` para o backend e o resto para o frontend (inclusive rotas do React como `/perfil`) |
+| Nginx como proxy reverso | [x] | `nginx/default.conf` | `/api/*` para o backend (com os parâmetros da URL) e o resto para o frontend, inclusive rotas do React. Usa o DNS interno do Docker: continua funcionando depois de recriar backend e frontend sem reiniciar o Nginx |
 | Isolamento por Docker Network | [x] | `docker-compose.yml` | Só o Nginx publica porta (8080). `rede_interna` é `internal`: portas 3000 e 3306 inacessíveis do host e o backend não acessa a internet |
 
 ## Tech Forge
