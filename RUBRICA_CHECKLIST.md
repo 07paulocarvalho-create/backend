@@ -27,16 +27,18 @@ Repositórios: `backend/` (API, Docker, Nginx, agentes) e `frontend/` (React).
 | Validação de email | [x] | `src/models/Email.ts` | Formato e unicidade (409) |
 | Persistência no banco | [x] | `src/database/`, `src/repositories/UsuarioRepository.ts` | Testado: usuário cadastrado continua no banco e consegue logar após reiniciar a API |
 
-### Edição de Usuário - [ ]
+### Edição de Usuário - [x]
+
+Rotas: `PUT /usuarios/:id` e `GET /usuarios/me`. Lógica em `src/services/UsuarioService.ts` (`atualizar`).
 
 | Requisito | Estado | Onde | Observação |
 |---|---|---|---|
-| Rota autenticada | [ ] | | |
-| Só pode editar o próprio usuário | [ ] | | |
-| Todos os campos obrigatórios | [ ] | | |
-| Validação de CPF | [ ] | | |
-| Validação de nível de senha | [ ] | | |
-| Não permitir alterar o email | [ ] | | |
+| Rota autenticada | [x] | `src/routes/usuarioRoutes.ts` | Sem token retorna 401 |
+| Só pode editar o próprio usuário | [x] | `UsuarioService.atualizar` | Id da rota diferente do id do token retorna 403 |
+| Todos os campos obrigatórios | [x] | `UsuarioService.atualizar` | Nome, CPF e senha; corpo vazio retorna 400 com erro por campo |
+| Validação de CPF | [x] | `src/models/Cpf.ts` | Inválido retorna 400; CPF de outro usuário retorna 409 |
+| Validação de nível de senha | [x] | `src/models/Senha.ts` | Senha fraca retorna 400; testado login com a senha nova |
+| Não permitir alterar o email | [x] | `UsuarioService.atualizar`, `src/models/Usuario.ts` | Email diferente retorna 400; no modelo o `#email` é `readonly` e não tem setter |
 
 ### CRUDs Completos - [ ]
 

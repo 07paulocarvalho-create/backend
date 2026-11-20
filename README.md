@@ -36,6 +36,10 @@ O `npm run db` usa o `docker-compose.dev.yml`, que libera a porta do MySQL apena
 | POST   | `/usuarios` | público | Cadastra um cliente                    |
 | POST   | `/login`    | público | Autentica e devolve o token JWT        |
 | GET    | `/usuarios` | admin   | Lista os usuários                      |
+| GET    | `/usuarios/me` | logado | Dados do usuário logado             |
+| PUT    | `/usuarios/:id` | logado | Edita o próprio usuário (nome, CPF e senha) |
+
+Na edição, nome, CPF e senha são obrigatórios. Editar outro usuário retorna `403` e tentar trocar o email retorna `400`.
 
 Rotas protegidas exigem o cabeçalho `Authorization: Bearer <token>`.
 
