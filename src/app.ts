@@ -4,7 +4,7 @@ import { criarAdmin } from "./database/criarAdmin";
 import { criarTabelas } from "./database/criarTabelas";
 import { AppError } from "./errors/AppError";
 import { UsuarioRepository } from "./repositories/UsuarioRepository";
-import { usuarioRoutes } from "./routes/usuarioRoutes";
+import { rotas } from "./routes";
 
 const app = express();
 const PORTA = Number(process.env.PORT) || 3000;
@@ -16,7 +16,7 @@ app.get("/", (_req, res) => {
     res.json({ mensagem: "API da Livraria Entre Páginas" });
 });
 
-app.use(usuarioRoutes);
+app.use(rotas);
 
 app.use((_req, res) => {
     res.status(404).json({ mensagem: "Rota não encontrada" });

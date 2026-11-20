@@ -10,6 +10,12 @@ const TABELAS = [
         perfil ENUM('admin', 'cliente') NOT NULL DEFAULT 'cliente',
         criado_em DATETIME(3) NOT NULL
     )`,
+    `CREATE TABLE IF NOT EXISTS categorias (
+        id CHAR(36) PRIMARY KEY,
+        nome VARCHAR(60) NOT NULL UNIQUE,
+        descricao VARCHAR(255) NULL,
+        criado_em DATETIME(3) NOT NULL
+    )`,
 ];
 
 export async function criarTabelas(): Promise<void> {
