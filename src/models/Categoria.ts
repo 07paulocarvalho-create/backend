@@ -34,6 +34,10 @@ export class Categoria extends Entidade {
         return { nome, descricao: descricao || null };
     }
 
+    get nome(): string {
+        return this.#nome;
+    }
+
     atualizar(dados: CategoriaDados): void {
         this.#nome = dados.nome;
         this.#descricao = dados.descricao;
