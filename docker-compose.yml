@@ -13,13 +13,65 @@ services:
     networks:
       - rede_interna
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
       interval: 5s
       timeout: 5s
       retries: 20
+      start_period: 20s
+
+  backend:
+    build: .
+    container_name: livraria-backend
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRA_EM: ${JWT_EXPIRA_EM:-8h}
+      ADMIN_NOME: ${ADMIN_NOME:-}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_SENHA: ${ADMIN_SENHA:-}
+      ADMIN_CPF: ${ADMIN_CPF:-}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - rede_interna
+
+  frontend:
+    build:
+      context: ../frontend
+      args:
+        VITE_API_URL: /api
+    container_name: livraria-frontend
+    restart: unless-stopped
+    networks:
+      - rede_interna
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: livraria-nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_PORTA:-8080}:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - rede_interna
+      - rede_publica
 
 volumes:
   mysql_dados:
 
 networks:
+  # Sem acesso externo: MySQL, backend e frontend só conversam entre si e com o Nginx
   rede_interna:
+    internal: true
+  rede_publica:
