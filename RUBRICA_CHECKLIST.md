@@ -4,6 +4,22 @@ Legenda: `[x]` concluído e testado · `[~]` parcial ou falta testar na tela · 
 
 Repositórios: `backend/` (API, Docker, Nginx, agentes) e `frontend/` (React).
 
+## Proposta e persona
+
+A **Livraria Entre Páginas** é uma livraria virtual pensada para uma pequena empreendedora (persona fictícia) que vende livros e precisa sair das planilhas. O sistema permite:
+
+- que clientes se cadastrem, façam login e consultem o catálogo de livros por categoria;
+- que clientes façam pedidos com um ou mais livros e acompanhem o status;
+- que a dona da livraria (administradora) gerencie livros, autores, categorias, pedidos e estoque.
+
+## Como rodar
+
+Com Docker Desktop e os repositórios `backend` e `frontend` lado a lado:
+
+1. Em `backend`, copie `.env.example` para `.env` e preencha as senhas do banco, o `JWT_SECRET` e os dados do administrador (`ADMIN_*`).
+2. Rode `docker compose up -d --build`.
+3. Acesse `http://localhost:8080`.
+
 ## Resumo
 
 | Disciplina | Situação |
@@ -154,5 +170,5 @@ Lógica testada: os dados que saem dos schemas foram enviados à API como o fron
 
 | Requisito | Estado | Observação |
 |---|---|---|
-| Conexão com persona/cliente | [x] | Persona descrita no `README.md` (fictícia) |
+| Conexão com persona/cliente | [x] | Persona descrita na seção "Proposta e persona" deste arquivo (fictícia) |
 | Uso de TypeScript sem JS injetado | [x] | Todo o código-fonte é `.ts`/`.tsx`, inclusive o hook dos agentes |
