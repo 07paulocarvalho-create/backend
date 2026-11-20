@@ -1,5 +1,6 @@
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
+import { criarTabelas } from "./database/criarTabelas";
 import { AppError } from "./errors/AppError";
 import { usuarioRoutes } from "./routes/usuarioRoutes";
 
@@ -30,10 +31,24 @@ app.use((erro: unknown, _req: Request, res: Response, _next: NextFunction) => {
         return;
     }
 
+    if ((erro as { code?: string }).code === "ER_DUP_ENTRY") {
+        res.status(409).json({ mensagem: "Registro já cadastrado" });
+        return;
+    }
+
     console.error(erro);
     res.status(500).json({ mensagem: "Erro interno no servidor" });
 });
 
-app.listen(PORTA, () => {
-    console.log(`Servidor rodando na porta ${PORTA}`);
+async function iniciar() {
+    await criarTabelas();
+
+    app.listen(PORTA, () => {
+        console.log(`Servidor rodando na porta ${PORTA}`);
+    });
+}
+
+iniciar().catch((erro) => {
+    console.error("Não foi possível iniciar o servidor:", erro.message);
+    process.exit(1);
 });

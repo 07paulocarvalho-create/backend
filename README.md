@@ -1,15 +1,33 @@
-# Backend - Cadastro de Usuário
+# Livraria Entre Páginas - Backend
 
 API em Node.js + Express + TypeScript.
 
+## Proposta
+
+A **Livraria Entre Páginas** é uma livraria virtual pensada para uma pequena empreendedora (persona fictícia) que vende livros e precisa sair das planilhas. O sistema permite:
+
+- que clientes se cadastrem, façam login e consultem o catálogo de livros;
+- que clientes façam pedidos com um ou mais livros;
+- que a dona da livraria (administradora) gerencie livros, autores, categorias, pedidos e estoque.
+
+O acompanhamento dos critérios de avaliação está em [RUBRICA_CHECKLIST.md](RUBRICA_CHECKLIST.md).
+
 ## Como rodar
+
+Pré-requisitos: Node.js 22+ e Docker Desktop.
+
+1. Copie `.env.example` para `.env` e defina as senhas do banco.
+2. Suba o MySQL e a API:
 
 ```bash
 npm install
+npm run db
 npm run dev
 ```
 
-O servidor sobe em `http://localhost:3000`.
+O servidor sobe em `http://localhost:3000` e cria as tabelas automaticamente.
+
+O `npm run db` usa o `docker-compose.dev.yml`, que libera a porta do MySQL apenas em `127.0.0.1` para o desenvolvimento local.
 
 ## Rotas
 
@@ -57,6 +75,7 @@ O servidor sobe em `http://localhost:3000`.
 src/
   app.ts
   controllers/
+  database/      conexão e criação das tabelas
   errors/
   models/        Usuario, Cpf, Email, Senha
   repositories/

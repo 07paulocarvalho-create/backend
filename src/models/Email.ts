@@ -41,8 +41,4 @@ export class Email {
     get endereco(): string {
         return this.#endereco;
     }
-
-    igual(outro: Email): boolean {
-        return this.#endereco === outro.#endereco;
-    }
 }

@@ -8,11 +8,13 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/app.js",
-    "dev": "tsx watch src/app.ts"
+    "dev": "tsx watch --env-file=.env src/app.ts",
+    "db": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d mysql"
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mysql2": "^3.24.6"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

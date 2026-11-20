@@ -14,7 +14,7 @@ const CRITERIOS = [
 ];
 
 export class Senha {
-    // Encapsulamento: o hash nunca é exposto, não existe getter para ele
+    // Encapsulamento: o hash não tem getter e nunca aparece nas respostas da API
     readonly #hash: string;
     readonly #salt: string;
 
@@ -30,6 +30,11 @@ export class Senha {
         }
         const salt = randomBytes(16).toString("hex");
         return new Senha(Senha.gerarHash(texto, salt), salt);
+    }
+
+    static restaurar(armazenada: string): Senha {
+        const [salt, hash] = armazenada.split(":");
+        return new Senha(hash, salt);
     }
 
     // Validação de nível de senha
@@ -63,6 +68,11 @@ export class Senha {
 
     private static gerarHash(texto: string, salt: string): string {
         return scryptSync(texto, salt, 64).toString("hex");
+    }
+
+    // Senha criptografada no banco: só o salt e o hash são gravados
+    paraArmazenamento(): string {
+        return `${this.#salt}:${this.#hash}`;
     }
 
     confere(texto: string): boolean {

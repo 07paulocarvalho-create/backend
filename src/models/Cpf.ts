@@ -59,8 +59,4 @@ export class Cpf {
     get formatado(): string {
         return this.#numero.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
     }
-
-    igual(outro: Cpf): boolean {
-        return this.#numero === outro.#numero;
-    }
 }

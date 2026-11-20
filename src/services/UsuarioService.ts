@@ -26,7 +26,7 @@ export class UsuarioService {
     constructor(private readonly repositorio: UsuarioRepository) {}
 
     // Cadastro de Usuário: nome, email, senha e CPF obrigatórios
-    cadastrar(entrada: CadastroUsuarioEntrada): Usuario {
+    async cadastrar(entrada: CadastroUsuarioEntrada): Promise<Usuario> {
         const nome = texto(entrada.nome);
         const email = texto(entrada.email);
         const senha = texto(entrada.senha);
@@ -53,11 +53,11 @@ export class UsuarioService {
         const emailUsuario = Email.criar(email);
         const cpfUsuario = Cpf.criar(cpf);
 
-        if (this.repositorio.buscarPorEmail(emailUsuario)) {
+        if (await this.repositorio.buscarPorEmail(emailUsuario)) {
             throw new AppError("Email já cadastrado", 409, { email: "Este email já está em uso" });
         }
 
-        if (this.repositorio.buscarPorCpf(cpfUsuario)) {
+        if (await this.repositorio.buscarPorCpf(cpfUsuario)) {
             throw new AppError("CPF já cadastrado", 409, { cpf: "Este CPF já está em uso" });
         }
 
@@ -68,11 +68,11 @@ export class UsuarioService {
             senha: Senha.criar(senha),
         });
 
-        this.repositorio.salvar(usuario);
+        await this.repositorio.salvar(usuario);
         return usuario;
     }
 
-    autenticar(entrada: LoginEntrada): Usuario {
+    async autenticar(entrada: LoginEntrada): Promise<Usuario> {
         const email = texto(entrada.email);
         const senha = texto(entrada.senha);
 
@@ -81,7 +81,7 @@ export class UsuarioService {
         }
 
         const erroEmail = Email.validar(email);
-        const usuario = erroEmail ? undefined : this.repositorio.buscarPorEmail(Email.criar(email));
+        const usuario = erroEmail ? undefined : await this.repositorio.buscarPorEmail(Email.criar(email));
 
         if (!usuario || !usuario.autenticar(senha)) {
             throw new AppError("Email ou senha incorretos", 401);
@@ -90,7 +90,7 @@ export class UsuarioService {
         return usuario;
     }
 
-    listar(): Usuario[] {
+    async listar(): Promise<Usuario[]> {
         return this.repositorio.listar();
     }
 }

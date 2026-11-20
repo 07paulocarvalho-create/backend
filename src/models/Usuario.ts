@@ -5,10 +5,21 @@ import { Email } from "./Email";
 import { Senha } from "./Senha";
 
 export type DadosUsuario = {
+    id?: string;
     nome: string;
     email: Email;
     cpf: Cpf;
     senha: Senha;
+    criadoEm?: Date;
+};
+
+export type UsuarioRegistro = {
+    id: string;
+    nome: string;
+    email: string;
+    cpf: string;
+    senha: string;
+    criado_em: Date;
 };
 
 export type UsuarioResposta = {
@@ -29,13 +40,24 @@ export class Usuario {
     readonly #criadoEm: Date;
 
     // Construtor limpo: apenas inicializa as propriedades
-    constructor({ nome, email, cpf, senha }: DadosUsuario) {
-        this.#id = randomUUID();
+    constructor({ id = randomUUID(), nome, email, cpf, senha, criadoEm = new Date() }: DadosUsuario) {
+        this.#id = id;
         this.#nome = Usuario.normalizarNome(nome);
         this.#email = email;
         this.#cpf = cpf;
         this.#senha = senha;
-        this.#criadoEm = new Date();
+        this.#criadoEm = criadoEm;
+    }
+
+    static restaurar(registro: UsuarioRegistro): Usuario {
+        return new Usuario({
+            id: registro.id,
+            nome: registro.nome,
+            email: Email.criar(registro.email),
+            cpf: Cpf.criar(registro.cpf),
+            senha: Senha.restaurar(registro.senha),
+            criadoEm: registro.criado_em,
+        });
     }
 
     static validarNome(valor: string): string | null {
@@ -75,19 +97,22 @@ export class Usuario {
         this.#nome = Usuario.normalizarNome(valor);
     }
 
-    possuiEmail(email: Email): boolean {
-        return this.#email.igual(email);
-    }
-
-    possuiCpf(cpf: Cpf): boolean {
-        return this.#cpf.igual(cpf);
-    }
-
     autenticar(senha: string): boolean {
         return this.#senha.confere(senha);
     }
 
-    // Exposição apenas dos dados públicos, a senha nunca sai do objeto
+    paraRegistro(): UsuarioRegistro {
+        return {
+            id: this.#id,
+            nome: this.#nome,
+            email: this.#email.endereco,
+            cpf: this.#cpf.formatado,
+            senha: this.#senha.paraArmazenamento(),
+            criado_em: this.#criadoEm,
+        };
+    }
+
+    // Exposição apenas dos dados públicos, a senha nunca vai para a resposta
     toJSON(): UsuarioResposta {
         return {
             id: this.#id,
