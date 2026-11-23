@@ -47,7 +47,7 @@ src/
 3. **Não faça `git commit` nem `git push`.** Prepare as mudanças e entregue os comandos para a pessoa executar.
 4. Não rode comandos destrutivos: `docker compose down -v` (apaga o banco), `DROP`, `TRUNCATE`, `DELETE` sem `WHERE` no banco real, `rm -rf`.
 5. Não altere a pasta `../referencias-professores`; ela é só para consulta.
-6. Não marque nada como concluído no `RUBRICA_CHECKLIST.md` sem ter testado.
+6. Não diga que uma tarefa está pronta sem ter testado.
 7. Antes de terminar uma tarefa, rode `npm run build` e teste as rotas afetadas.
 
 Essas regras também são aplicadas por `.claude/settings.json` e pelo hook `.claude/hooks/protegerEnv.ts`, que bloqueiam o acesso a `.env` e os comandos proibidos.
@@ -58,4 +58,4 @@ Essas regras também são aplicadas por `.claude/settings.json` e pelo hook `.cl
 |---|---|
 | [`criar-crud`](.agents/skills/criar-crud/SKILL.md) | Adicionar um novo recurso com CRUD completo |
 | [`testar-api`](.agents/skills/testar-api/SKILL.md) | Subir a API e testar rotas, permissões e validações |
-| [`atualizar-checklist`](.agents/skills/atualizar-checklist/SKILL.md) | Conferir e atualizar o `RUBRICA_CHECKLIST.md` |
+| [`revisar-codigo`](.agents/skills/revisar-codigo/SKILL.md) | Revisar uma mudança antes de entregar |

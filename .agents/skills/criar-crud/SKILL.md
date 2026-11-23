@@ -37,4 +37,4 @@ Use a base genérica. Um CRUD novo não deve alterar `RepositorioMySQL`, `CrudSe
 
 - `npm run build` sem erros.
 - Teste com a skill `testar-api`: 401 sem token, 403 para cliente onde for só admin, 400 com dados inválidos, 404 para id inexistente, paginação e 409 em vínculos.
-- Atualize o `RUBRICA_CHECKLIST.md` com o novo recurso e os testes feitos.
+- Revise a mudança com a skill `revisar-codigo`.
